@@ -1,13 +1,14 @@
 package mx.tc.j2se.tasks;
 
+import java.sql.Time;
+
 public class TaskImpl implements Task {
 
     private String title;
-    private int time;
-    private int start;
-    private int end;
-    private int interval;
-
+    private int time ;
+    private int start = 0;
+    private int end = 0;
+    private int interval = 0;
     private boolean active;
 
     public TaskImpl() {
@@ -52,13 +53,15 @@ public class TaskImpl implements Task {
         this.end = end;
     }
 
-    public int getInterval() {
+    @Override
+    public int getRepeatInterval() {
         return interval;
     }
 
     public void setInterval(int interval) {
         this.interval = interval;
     }
+
 
     @Override
     public boolean isActive() {
@@ -83,21 +86,21 @@ public class TaskImpl implements Task {
 
     @Override
     public int getStartTime() {
-        return 0;
+        return this.getStart();
     }
 
     @Override
     public int getEndTime() {
-        return 0;
+        return this.getEnd();
     }
 
-    @Override
-    public int getRepeatInterval() {
-        return 0;
-    }
 
     @Override
     public void setTime(int start, int end, int interval) {
+
+        this.start = start;
+        this.end = end;
+        this.interval = interval;
 
     }
 
