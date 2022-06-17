@@ -23,4 +23,7 @@ public interface Task {
     void setTime(int start, int end, int interval);
 
     boolean isRepeated();
+
+    int nextTimeAfter(int current);
+
 }

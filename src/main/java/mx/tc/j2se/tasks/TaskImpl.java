@@ -108,4 +108,9 @@ public class TaskImpl implements Task {
     public boolean isRepeated() {
         return false;
     }
+
+    @Override
+    public int nextTimeAfter(int current) {
+        return 0;
+    }
 }
