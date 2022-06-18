@@ -106,8 +106,7 @@ class TaskImplTest {
     @Test
     void setTime() {
         TaskImpl task = new TaskImpl("tarea1", 1, 40, 1);
-        int time = task.getTime();
-        int interval = task.getRepeatInterval();
+
 
         if (task.isRepeated()) {
             System.out.println("the task is repetitive, become a non-repetitive task");
