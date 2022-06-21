@@ -1,7 +1,6 @@
 package mx.tc.j2se.tasks;
 
 public interface Task {
-
     String getTitle();
 
     void setTitle(String title);
@@ -25,5 +24,4 @@ public interface Task {
     boolean isRepeated();
 
     int nextTimeAfter(int current);
-
 }

@@ -1,29 +1,27 @@
 package mx.tc.j2se.tasks;
 
-import java.security.spec.RSAOtherPrimeInfo;
-
 public class TaskImpl implements Task {
 
     private String title;
-    private int time = 0;
-    private int start = 0;
-    private int end = 0;
-    private int interval = 0;
-    private boolean active;
+    private int time;
 
+    private int start;
+    private int end;
+    private int interval;
+
+    private boolean active;
+    private boolean repeated;
     private int current;
 
     public TaskImpl() {
     }
 
     public TaskImpl(String title, int time) {
-        this.active = false;
         this.title = title;
         this.time = time;
     }
 
     public TaskImpl(String title, int start, int end, int interval) {
-        this.active = false;
         this.title = title;
         this.start = start;
         this.end = end;
@@ -40,51 +38,26 @@ public class TaskImpl implements Task {
         this.title = title;
     }
 
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public void setEnd(int end) {
-        this.end = end;
-    }
-
-    @Override
-    public int getRepeatInterval() {
-
-        if (isRepeated()) {
-            return interval;
-        }
-        return 0;
-
-    }
-
-    public void setInterval(int interval) {
-        this.interval = interval;
-    }
-
-
     @Override
     public boolean isActive() {
-        return this.active;
+        return active;
     }
 
     @Override
     public void setActive(boolean active) {
         this.active = active;
+
     }
 
     @Override
     public int getTime() {
 
-        return time;
+        if (isRepeated()) {
+            return start;
+        } else {
+            return time;
+        }
+
     }
 
     @Override
@@ -94,94 +67,95 @@ public class TaskImpl implements Task {
             this.start = 0;
             this.end = 0;
             this.interval = 0;
-            this.time = time;
-        } else {
-            this.start = 0;
-            this.end = 0;
-            this.time = time;
         }
+        this.time = time;
+
 
     }
-
 
     @Override
     public int getStartTime() {
 
-        if (!isRepeated()) {
-            return this.getTime();
+        if (isRepeated()) {
+            return start;
         } else {
-            return this.getStart();
+            return time;
         }
 
     }
 
     @Override
     public int getEndTime() {
-
-        if (!isRepeated()) {
-            return this.getTime();
+        if (isRepeated()) {
+            return end;
         } else {
-            return this.getEnd();
+            return time;
         }
+    }
 
+    @Override
+    public int getRepeatInterval() {
+        if (isRepeated()) {
+            return interval;
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public void setTime(int start, int end, int interval) {
 
-        if (isRepeated()) {
-            this.start = start;
-            this.end = end;
-            this.interval = interval;
-        } else {
-            this.start = start;
-            this.end = end;
-            this.interval = interval;
+        if (!isRepeated()) {
+            this.time = 0;
         }
+        this.start = start;
+        this.end = end;
+        this.interval = interval;
 
 
     }
 
     @Override
     public boolean isRepeated() {
-        int interval = this.interval;
-        return interval > 0;
+
+        if (interval > 0) {
+            return repeated = true;
+        } else {
+            return repeated = false;
+        }
+
     }
 
     @Override
     public int nextTimeAfter(int current) {
 
-        current = this.getTime();
-        interval = this.getRepeatInterval();
-        start = this.getStartTime();
-        end = this.getEndTime();
+        this.current = current;
+        int suma = 0;
 
-        if (isActive()) {
-            if (isRepeated()){
-                for (int i = start; i <= end; i++ ){
+        if (isRepeated()) {
 
-                    if(i == end){
-                        System.out.println("the task is not execute anymore: ");
-                        return -1;
-                    }else{
-                        int nextTask = current+interval;
-                        System.out.println("the current time is: "+current);
-                        System.out.println("the next task start in: "+nextTask);
-                        current = nextTask;
-                        i = current;
-                    }
-                }
-            }else{
-                System.out.println("The task is not repetitive");
-                System.out.println("The task will not be executed anymore");
+            if (current > end) {
+                System.out.println("la tarea no se ejecutara mas");
                 return -1;
+            } else {
+                if (current < start) {
+                    return start;
+                } else {
+                    int i = 0;
+                    for (i = start; i < end; i++) {
+                         i +=interval--;
+                        int sum = i;
+                    }
+                    return 0;
+                }
             }
-        } else {
-            System.out.println("the task is not active");
+        } else if (current > time) {
+            System.out.println("la tarea no se ejecutara mas");
             return -1;
+        } else {
+            System.out.println("la tarea no es repetitiva");
+            System.out.println("su hora de inicio es:" + time);
+            return time;
         }
-
-        return 0;
-
     }
 }
