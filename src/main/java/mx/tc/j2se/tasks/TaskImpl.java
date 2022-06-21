@@ -11,7 +11,6 @@ public class TaskImpl implements Task {
 
     private boolean active;
     private boolean repeated;
-    private int current;
 
     public TaskImpl() {
     }
@@ -19,6 +18,7 @@ public class TaskImpl implements Task {
     public TaskImpl(String title, int time) {
         this.title = title;
         this.time = time;
+        this.active = false;
     }
 
     public TaskImpl(String title, int start, int end, int interval) {
@@ -26,6 +26,7 @@ public class TaskImpl implements Task {
         this.start = start;
         this.end = end;
         this.interval = interval;
+        this.active = false;
     }
 
     @Override
@@ -63,12 +64,11 @@ public class TaskImpl implements Task {
     @Override
     public void setTime(int time) {
 
-        if (isRepeated()) {
-            this.start = 0;
-            this.end = 0;
-            this.interval = 0;
-        }
+        this.repeated = false;
         this.time = time;
+        this.start = 0;
+        this.end = 0;
+        this.interval = 0;
 
 
     }
@@ -86,11 +86,13 @@ public class TaskImpl implements Task {
 
     @Override
     public int getEndTime() {
+
         if (isRepeated()) {
-            return end;
+            return start;
         } else {
             return time;
         }
+
     }
 
     @Override
@@ -105,12 +107,22 @@ public class TaskImpl implements Task {
     @Override
     public void setTime(int start, int end, int interval) {
 
-        if (!isRepeated()) {
-            this.time = 0;
+        this.time = 0;
+
+        if (start < 0) {
+            this.start = 0;
+            this.end = 0;
+            this.interval = 0;
+        } else if (end < 0 || interval < 0) {
+            this.start = start;
+            this.end = start;
+            this.interval = 0;
+        } else {
+            this.start = start;
+            this.end = end;
+            this.interval = interval;
+            this.repeated = true;
         }
-        this.start = start;
-        this.end = end;
-        this.interval = interval;
 
 
     }
@@ -118,44 +130,66 @@ public class TaskImpl implements Task {
     @Override
     public boolean isRepeated() {
 
-        if (interval > 0) {
-            return repeated = true;
-        } else {
-            return repeated = false;
-        }
+        return interval > 0;
 
     }
 
     @Override
     public int nextTimeAfter(int current) {
 
-        this.current = current;
-        int suma = 0;
 
-        if (isRepeated()) {
+        if (!isActive()) { //if the task is not active it returns -1
+            return -1;
 
-            if (current > end) {
-                System.out.println("la tarea no se ejecutara mas");
-                return -1;
+        } else {
+            if (current < time) {// if current < time return time
+                return time;
+            }
+
+            if (current < start) { // if current < start return start
+                return start;
+            }
+
+            if ((current < (start + interval) || (current == start)) && isRepeated()) { // if current < (start + interval) or current equals start and is repetitive return start+interval
+                return start + interval;
+            }
+
+            if (current > (end - interval) && current < end && isRepeated()) { // if current > (end - interval) and current < end and is repeated task return end;
+                return end;
+
             } else {
-                if (current < start) {
-                    return start;
-                } else {
-                    int i = 0;
-                    for (i = start; i < end; i++) {
-                         i +=interval--;
-                        int sum = i;
+
+                int count = (end - start) / interval; //number of repetitions in a task
+
+                int count2 = 1;
+                                    //50 100 /20
+                System.out.println("numero de repeticiones en una tarea: "+count);
+                while (count2 < count) {
+                    System.out.println("valor count2: "+count2);
+                    int observer = start + (interval * count2);
+                    System.out.println(current);
+                    System.out.println(observer);
+                    if (current == observer) {
+                        System.out.println("estas dentro del while");
+                        return observer + interval;
                     }
-                    return 0;
+                    count2++;
+                }
+                for (int i = start; i < end; i += interval)
+                {
+                    if ((current >= i) &&
+                       (current < i + interval) &&
+                       ((current < end) &&
+                       ((i + interval) <= end)) ||
+                       ((current < end - interval) &&
+                       (current > end - (interval * 2))))
+                    {
+                        System.out.print("estas dentro el for: ");
+                        return i + interval;
+                    }
                 }
             }
-        } else if (current > time) {
-            System.out.println("la tarea no se ejecutara mas");
-            return -1;
-        } else {
-            System.out.println("la tarea no es repetitiva");
-            System.out.println("su hora de inicio es:" + time);
-            return time;
         }
+        return -1;
     }
 }

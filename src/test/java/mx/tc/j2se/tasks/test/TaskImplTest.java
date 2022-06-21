@@ -1,9 +1,9 @@
 package mx.tc.j2se.tasks.test;
 
+import mx.tc.j2se.tasks.Task;
 import mx.tc.j2se.tasks.TaskImpl;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,6 +31,11 @@ class TaskImplTest {
 
     @Test
     void setTime() {
+        TaskImpl task = new TaskImpl("asdfas",20,50,10);
+        task.setTime(5);
+        System.out.println(task.isRepeated());
+        System.out.println(task.isActive());
+        System.out.println(task.getTime());
     }
 
     @Test
@@ -55,14 +60,39 @@ class TaskImplTest {
 
     @Test
     void nextTimeAfter() {
+//
+//        TaskImpl task = new TaskImpl("correr",5,50,20);
+//        task.setActive(true);
+//        System.out.println(task.isActive());
+//        System.out.println(task.isRepeated());
+//        System.out.println(task.nextTimeAfter(23));
 
-        TaskImpl task = new TaskImpl("correr",10,20,5);
-        task.nextTimeAfter(15);
+        TaskImpl task = new TaskImpl("correr por la mañana",8,50, 2 );
+        task.setActive(true);
+        System.out.println(task.getTime());
+        System.out.println(task.getStartTime());
+        System.out.println(task.getEndTime());
+        System.out.println(task.isActive());
+        System.out.println(task.isRepeated());
 
+        System.out.println(task.nextTimeAfter(15));
 
+    }
 
+    @Test
+    void setTime2() {
+
+        TaskImpl task = new TaskImpl("correr",40);
+        task.setTime(10,30,5);
+        System.out.println(task.getTime());
+        System.out.println(task.getStartTime());
+        System.out.println(task.getEndTime());
+        assertEquals(10,task.getTime());
 
 
 
     }
+
+
+
 }
