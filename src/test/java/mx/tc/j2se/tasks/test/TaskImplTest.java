@@ -120,17 +120,13 @@ class TaskImplTest {
     @Test
     void nextTimeAfter() {
 
-        TaskImpl task = new TaskImpl("correr por la mañana", 10);
-        task.setActive(true);
-        task.setTime(20);
+        TaskImpl task = new TaskImpl("run 9pm",5,45,5);
+        task.setActive(false);
         System.out.println(task.isActive());
         System.out.println(task.isRepeated());
-        System.out.println(task.nextTimeAfter(0));
+        assertEquals(-1,task.nextTimeAfter(33));
 
-        task.setTime(10, 30, 5);
-        System.out.println(task.isRepeated());
-        System.out.println(task.isActive());
-        System.out.println(task.nextTimeAfter(14));
+
 
 
     }

@@ -2,12 +2,13 @@ package mx.tc.j2se.tasks;
 
 
 /**
- * Classname: TaskImpl
+ * Class-name: TaskImpl
  * This class is made for the purpose of implementing the Task interface.
- *
+ * <p>
+ * Author: Alberto Sanchez
  * Version info 1.0
- *
- * Copyright netracker
+ * <p>
+ * Copyright Netracker
  */
 
 public class TaskImpl implements Task {
@@ -49,7 +50,7 @@ public class TaskImpl implements Task {
      */
     public TaskImpl(String title, int start, int end, int interval) {
         this.title = title;
-        setTime(start,end,interval);
+        setTime(start, end, interval);
         this.active = false;
     }
 
@@ -103,11 +104,7 @@ public class TaskImpl implements Task {
     @Override
     public int getTime() {
 
-        if (isRepeated()) {
-            return start;
-        } else {
-            return start;
-        }
+        return start;
 
     }
 
@@ -121,7 +118,7 @@ public class TaskImpl implements Task {
     public void setTime(int time) {
 
         this.repeated = false;
-        setTime(time,time,0);
+        setTime(time, time, 0);
 
     }
 
@@ -147,6 +144,9 @@ public class TaskImpl implements Task {
     @Override
     public int getEndTime() {
 
+        if (end < 0) {
+            return this.end = 0;
+        }
         return end;
 
     }
@@ -159,11 +159,19 @@ public class TaskImpl implements Task {
      */
     @Override
     public int getRepeatInterval() {
-        if (repeated) {
-            return interval;
-        } else {
+
+        if (((end < 0) && (end < start)) || !repeated || interval <= 0)
+        {
             return 0;
+        } else {
+            return interval;
         }
+
+//        if (repeated) {
+//            return interval;
+//        } else {
+//            return 0;
+//        }
     }
 
     /**
@@ -177,23 +185,18 @@ public class TaskImpl implements Task {
     @Override
     public void setTime(int start, int end, int interval) {
 
-        if (start < 0)
-        {
+        if (start < 0) {
             this.start = 0;
             this.end = 0;
             this.interval = 0;
-        }
-        else if (end < 0 || interval <0)
-        {
+        } else if (end < 0 || interval < 0) {
             this.start = start;
             this.end = start;
             this.interval = 0;
-        }
-        else
-        {
-            this.start    = start;
-            this.end      = end;
-            this.interval   = interval;
+        } else {
+            this.start = start;
+            this.end = end;
+            this.interval = interval;
             this.repeated = true;
         }
 
@@ -226,49 +229,32 @@ public class TaskImpl implements Task {
         if (!isActive() || current >= end || current > end - interval)
         { //if the task is not active it returns -1, or current time > endTime
             return -1;
-
-        } else {
-
+        }
+        else
+        {
             if (current < getTime()) {// if current < time return time
                 return getTime();
             }
-
-            if (current < start) { // if current < start return start
-                return start;
-            }
-
             if ((current < (start + interval) || (current == start)) && isRepeated()) { // if current < (start + interval) or current equals start and is repetitive return start+interval
                 return start + interval;
             }
-
             if (current > (end - interval) && current < end && isRepeated()) { // if current > (end - interval) and current < end and is repeated task return end;
                 return end;
-
             } else {
 
                 int count = (end - start) / interval; //number of repetitions in a task
                 int count2 = 1;
-                //50 100 /20
-                System.out.println("number of repetition in a task: " + count);
                 while (count2 < count) {
 
-                    int observer = start + (interval * count2); //
-                    System.out.println(current);
-                    System.out.println(observer);
+                    int observer = start + (interval * count2);
                     if (current == observer) {
-                        System.out.println("!!!!!! im here");
                         return observer + interval;
                     }
                     count2++;
                 }
                 for (int i = start; i < end; i += interval) {
-                    if ((current >= i) &&
-                            (current < i + interval) &&
-                            ((current < end) &&
-                                    ((i + interval) <= end)) ||
-                            ((current < end - interval) &&
-                                    (current > end - (interval * 2)))) {
-                        System.out.print("!!!!!!!! FOR: ");
+                    if ((current >= i) && (current < i + interval) && ((current < end) && ((i + interval) <= end))
+                            || ((current < end - interval) && (current > end - (interval * 2)))) {
                         return i + interval;
                     }
                 }
