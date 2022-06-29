@@ -33,6 +33,9 @@ public class TaskImpl implements Task {
      * @param time  the time
      */
     public TaskImpl(String title, int time) {
+        if (time < 0){
+        throw new IllegalArgumentException("time cannot be negative ");
+        }
         this.title = title;
         setTime(time);
         this.active = false;

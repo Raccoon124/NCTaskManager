@@ -145,7 +145,7 @@ public class ArrayTaskListImpl implements ArrayTaskList {
         list = new ArrayTaskListImpl();
 
         if (from < 0 || to < 0) {
-            System.err.print("You entered a wrong number, they cant be negative!!");
+            throw new IllegalArgumentException("the time labels cannot be negative");
         }
 
         else {
