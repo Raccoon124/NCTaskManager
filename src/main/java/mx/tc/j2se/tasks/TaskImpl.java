@@ -1,6 +1,5 @@
 package mx.tc.j2se.tasks;
 
-
 /**
  * Class-name: TaskImpl
  * This class is made for the purpose of implementing the Task interface.
@@ -253,8 +252,7 @@ public class TaskImpl implements Task {
                     count2++;
                 }
                 for (int i = start; i < end; i += interval) {
-                    if ((current >= i) && (current < i + interval) && ((current < end) && ((i + interval) <= end))
-                            || ((current < end - interval) && (current > end - (interval * 2)))) {
+                    if ((current >= i) && (current < i + interval) && ((current < end) && ((i + interval) <= end)) || ((current < end - interval) && (current > end - (interval * 2)))) {
                         return i + interval;
                     }
                 }
