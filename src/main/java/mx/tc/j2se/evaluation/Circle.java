@@ -11,7 +11,7 @@ public class Circle {
 
     public Circle(int radius) {
 
-        if (radius <= 0) {
+        if (radius <= 0 ) {
             throw new IllegalArgumentException("the radius was invalid");
         }
         this.radius = radius;
@@ -19,7 +19,7 @@ public class Circle {
 
     public double getArea() {
 
-        this.area = Math.PI * this.radius * this.radius;
+        this.area = Math.PI * (this.radius * this.radius);
         return area;
 
     }
@@ -37,5 +37,10 @@ public class Circle {
             throw new IllegalArgumentException("the radius was invalid");
         }
         this.radius = radius;
+    }
+
+    void printDetails()
+    {
+        System.out.println("Radius = " + radius);
     }
 }

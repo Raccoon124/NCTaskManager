@@ -1,16 +1,15 @@
 package mx.tc.j2se.evaluation;
 
+import static mx.tc.j2se.evaluation.Evaluation1.biggestCircle;
+
 public class Main {
 
 
     public static void main(String[] args) {
 
 
-        Circle circulo1 = new Circle(5);
-        circulo1.setRadius(2);
-        System.out.println(circulo1.getRadius());
-        System.out.println(circulo1.getArea());
-
+        Circle[] circles = {new Circle(40), new Circle(20), new Circle(5)};
+        biggestCircle(circles);
 
 
     }
