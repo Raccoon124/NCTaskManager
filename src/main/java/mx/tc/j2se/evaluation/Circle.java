@@ -23,11 +23,9 @@ public class Circle {
         return area;
 
     }
-
-    public void setArea(float area) {
+    public void setArea(double area) {
         this.area = area;
     }
-
 
     public int getRadius() {
         return radius;
