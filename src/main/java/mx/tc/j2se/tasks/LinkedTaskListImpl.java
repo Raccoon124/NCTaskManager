@@ -1,16 +1,14 @@
 package mx.tc.j2se.tasks;
 
 
-import java.io.Serializable;
-
+/**
+ * The type Linked task list.
+ */
 public class LinkedTaskListImpl implements LinkedTaskList {
 
+    private int size;
     private Node first = null;
-    private Node last = null;
-    private int size = 0; // number of task in the list
 
-    public LinkedTaskListImpl() {
-    }
 
     /**
      * Add.
@@ -19,18 +17,17 @@ public class LinkedTaskListImpl implements LinkedTaskList {
      */
     @Override
     public void add(Task task) {
-        if (task == null) {
-            throw new IllegalArgumentException("the task can't be null");
+        if (task == null)
+            throw new IllegalArgumentException("task = null");
+
+        if (first == null)
+            first = new Node(task, null);
+        else {
+            Node temp = first;
+            while (temp.next != null)
+                temp = temp.next;
+            temp.next = new Node(task, null);
         }
-        Node newList = new Node(task);
-        if (size == 0) {
-            first = newList;
-        }
-        if (last != null) {
-            last.next = newList;
-        }
-        newList.previous = last;
-        last = newList;
         size++;
     }
 
@@ -42,35 +39,35 @@ public class LinkedTaskListImpl implements LinkedTaskList {
      */
     @Override
     public boolean remove(Task task) {
+        if (task == null) {
+            throw new IllegalArgumentException("task = null");
+        }
 
-//        if (task == null) {
-//            return false;
-//        }
-//        int sizeTasks = size();
-//        if (sizeTasks == 0) {
-//            return false;
-//        }
-//        boolean taskDeleted = false;
-//        int newIndex = 0;
-//        //Task[] supArray = new Task[sizeTasks - 1];
-//        for (int i = 0; i < sizeTasks; i++) {
-//            System.out.println(taskDeleted);
-//            if (!taskDeleted && (task.equals(this.getTask(i)))) {
-//                taskDeleted = true;
-//                size--;
-//            } else {
-//                if (newIndex < (sizeTasks - 1)) {
-//                    //supArray[newIndex] = this.getTask(i);
-//                    newIndex++;
-//                }
-//            }
-//        }
-//        if (!taskDeleted) {
-//            return false;
-//        }
-//        //this.arr = supArray;
-//        return true;
-        return true;
+        if (first == null) {
+            throw new RuntimeException(".");
+        }
+
+        if (task.equals((first.data))) {
+            first = first.next;
+            size--;
+            return true;
+        }
+
+        Node current = first;
+        Node previous = null;
+
+        while (current != null && !current.data.equals(task)) {
+            previous = current;
+            current = current.next;
+        }
+        if (current != null) {
+            assert previous != null;
+            previous.next = current.next;
+            size--;
+            return true;
+        } else
+            return false;
+
     }
 
     /**
@@ -80,7 +77,7 @@ public class LinkedTaskListImpl implements LinkedTaskList {
      */
     @Override
     public int size() {
-        return this.size;
+        return size;
     }
 
     /**
@@ -92,81 +89,68 @@ public class LinkedTaskListImpl implements LinkedTaskList {
     @Override
     public Task getTask(int index) {
 
-        String s = "";
-        if (index < 0) {
-            s = s + "The index can not be negative. ";
+        int i = 0;
+
+        if (index < 0 && index >= size())
+            throw new IndexOutOfBoundsException("cannot delete");
+        else {
+            if (index == 0)
+                return first.data;
+            else {
+                Node temp = first;
+                while (temp.next != null) {
+                    temp = temp.next;
+                    i++;
+                    if (i == index)
+                        return temp.data;
+                }
+                return temp.data;
+            }
         }
-        if (index > size()) {
-            s = s + "Index out of bounds. ";
-        }
-        if (!s.equals("")) {
-            throw new IllegalArgumentException(s);
-        }
-       // return arr[index];
-        return null;
+
     }
 
     /**
-     * Sets task.
+     * Incoming linked task list.
      *
-     * @param task  the task
-     * @param index the index
+     * @param from the from
+     * @param to   the to
+     * @return the linked task list
      */
-    public void setTask(Task task, int index) {
-        String s = "";
-        if (index < 0) {
-            s = s + "The index can not be negative. ";
-        }
-        if (index > size()) {
-            s = s + "Index out of bounds. ";
-        }
-        if (!s.equals("")) {
-            throw new IllegalArgumentException(s);
-        }
-       // arr[index] = task;
-    }
-
     @Override
     public LinkedTaskList incoming(int from, int to) {
 
-        if ((from < 0) || (to < 0)) {
-            throw new IllegalArgumentException("time can not be negative!");
-        }
-        LinkedTaskList newLTL = new LinkedTaskListImpl() {
-        };
-        int tmpTime;
-        int tmpNumberTasks = size();
-        for (int i = 0; i < tmpNumberTasks; i++) {
-            tmpTime = this.getTask(i).nextTimeAfter(from);
-            if ((tmpTime != -1) && (tmpTime <= to)) {
-                newLTL.add(this.getTask(i));
+        LinkedTaskList listData = new LinkedTaskListImpl();
+
+        if (from < 0 || to < 0) {throw new IllegalArgumentException("the time labels cannot be negative");}
+        if (to < from) {throw new IllegalArgumentException("to cannot be < from");}
+        else {
+            for (int i = 0; i < size(); i++)
+            {
+                if (getTask(i).nextTimeAfter(from) != -1 && to >= getTask(i).nextTimeAfter(from))
+                {
+                    listData.add(getTask(i));
+                }
             }
+            return listData;
         }
-        return newLTL;
+
     }
 
-    /**
-     * Class for work with Nodes of LinkedTaskList
-     */
-    private class Node implements Serializable {
-        Node next = null;
-        Node previous = null;
-        Task taskNode;
+    private static class Node {
+        private final Task data;
+        private Node next;
 
-        private Node(Task task) {
-            if (task == null) {
-                throw new NullPointerException();
-            }
-            this.taskNode = task;
-        }
 
-        void setNext(Node next) {
+        /**
+         * Instantiates a new Node.
+         *
+         * @param data the data
+         * @param next the next
+         */
+        public Node(Task data, Node next) {
+            this.data = data;
             this.next = next;
         }
-
-        void setPrevious(Node previous) {
-            this.previous = previous;
-        }
     }
-
 }
