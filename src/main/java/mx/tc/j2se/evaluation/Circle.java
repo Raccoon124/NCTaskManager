@@ -12,7 +12,7 @@ public class Circle {
     public Circle(int radius) {
 
         if (radius <= 0 ) {
-            throw new IllegalArgumentException("the radius was invalid");
+            throw new IllegalArgumentException("the radius is not valid");
         }
         this.radius = radius;
     }
@@ -39,8 +39,4 @@ public class Circle {
         this.radius = radius;
     }
 
-    void printDetails()
-    {
-        System.out.println("Radius = " + radius);
-    }
 }

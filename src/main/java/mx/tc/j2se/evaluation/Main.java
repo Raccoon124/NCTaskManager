@@ -7,8 +7,12 @@ public class Main {
 
     public static void main(String[] args) {
 
+//        Circle circ = new Circle();
+//        circ.setRadius(2);
+//        System.out.println(circ.getRadius());
+//        System.out.println(circ.getArea());
 
-        Circle[] circles = {new Circle(40), new Circle(20), new Circle(5)};
+        Circle[] circles = {new Circle(10), new Circle(20), new Circle(30)};
         biggestCircle(circles);
 
 
