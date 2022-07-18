@@ -24,4 +24,10 @@ public interface Task {
     boolean isRepeated();
 
     int nextTimeAfter(int current);
+
+    boolean equals(Object o);
+
+    int hashCode();
+
+    String toString();
 }

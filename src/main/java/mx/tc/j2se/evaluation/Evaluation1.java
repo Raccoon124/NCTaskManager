@@ -26,7 +26,3 @@ public class Evaluation1 extends Circle {
     }
 
 }
-
-
-
-

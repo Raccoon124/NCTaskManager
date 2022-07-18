@@ -1,5 +1,7 @@
 package mx.tc.j2se.tasks;
 
+import java.util.Objects;
+
 /**
  * Class-name: TaskImpl
  * This class is made for the purpose of implementing the Task interface.
@@ -125,7 +127,7 @@ public class TaskImpl implements Task {
     }
 
     /**
-     * this method gets the start time of a task, it the task is a non-repetitive one,
+     * this method gets the start time of a task, it is the task is a non-repetitive one,
      * the method mus return the time of the execution.
      *
      * @return the start time of a task
@@ -169,11 +171,6 @@ public class TaskImpl implements Task {
             return interval;
         }
 
-//        if (repeated) {
-//            return interval;
-//        } else {
-//            return 0;
-//        }
     }
 
     /**
@@ -262,5 +259,45 @@ public class TaskImpl implements Task {
             }
         }
         return -1;
+    }
+
+    /**
+     */
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) return true;
+        if (!(obj instanceof Task)) return false;
+        Task task = (Task) obj;
+        return isActive() == task.isActive() &&
+                getTime() == task.getTime() &&
+                getRepeatInterval() == task.getRepeatInterval() &&
+                isRepeated() == task.isRepeated() &&
+                getStartTime() == task.getStartTime() &&
+                getEndTime() == task.getEndTime() &&
+                Objects.equals(getTitle(), task.getTitle());
+    }
+
+    /**
+     */
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getTitle(),isActive(),getTime(),getRepeatInterval(),isRepeated(),getStartTime(),getEndTime());
+    }
+
+    /**
+     */
+    @Override
+    public String toString() {
+        return "Task{" +
+                "title='" + title + '\'' +
+                ", active=" + active +
+                ", time=" + start +
+                ", Interval=" + interval +
+                ", repeated=" + repeated +
+                ", startTime=" + start +
+                ", endTime=" + end +
+                '}';
     }
 }

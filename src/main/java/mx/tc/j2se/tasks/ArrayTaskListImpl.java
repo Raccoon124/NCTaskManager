@@ -1,40 +1,33 @@
 package mx.tc.j2se.tasks;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+
 /**
  * The type Array task list.
  */
-public class ArrayTaskListImpl implements ArrayTaskList {
+public class ArrayTaskListImpl implements Cloneable, Iterable<Task>, ArrayTaskList {
 
-    private Task[] arr = new Task[10];
-    private int size = 0; // number of task in the list
+    private Task[] taskList = new Task[0];
 
-
-    /**
-     * constructor without parameters
-     */
-    public ArrayTaskListImpl() {
-
-    }
 
     /**
      * Method to add new task to ArrayList
      *
      * @param task task that need add
      */
-    @Override
     public void add(Task task) {
-        if (task == null) {
-            throw new IllegalArgumentException("the task can't be null");
+
+        Task[] newList = new Task[taskList.length + 1];
+        newList[0] = task;
+        for (int i = 0; i < taskList.length; i++) {
+            newList[i + 1] = taskList[i];
         }
-        if (size == this.arr.length) {
-            Task[] arrTemp = new Task[(size() + 10)];
-            for (int i = 0; i < size(); i++) {
-                arrTemp[i] = this.getTask(i);
-            }
-            this.arr = arrTemp;
-        }
-        this.arr[size()] = task;
-        size++;
+        taskList = newList;
+
     }
 
     /**
@@ -43,36 +36,30 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      * @param task task that need add
      * @return the boolean, true or false
      */
-    @Override
     public boolean remove(Task task) {
 
-        if (task == null) {
-            return false;
-        }
-        int sizeTasks = size();
-        if (sizeTasks == 0) {
-            return false;
-        }
-        boolean taskDeleted = false;
-        int newIndex = 0;
-        Task[] supArray = new Task[sizeTasks - 1];
-        for (int i = 0; i < sizeTasks; i++) {
-            System.out.println(taskDeleted);
-            if (!taskDeleted && (task.equals(this.getTask(i)))) {
-                taskDeleted = true;
-                size--;
-            } else {
-                if (newIndex < (sizeTasks - 1)) {
-                    supArray[newIndex] = this.getTask(i);
-                    newIndex++;
-                }
+        int delTask = -1;
+
+        for (int i = 0; i < taskList.length; i++) {
+            if (taskList[i].equals(task)) {
+                delTask = i;
+                break;
             }
         }
-        if (!taskDeleted) {
+
+        if (delTask != -1) {
+            Task[] newTaskList = new Task[taskList.length - 1];
+
+            for (int i = 0; i < delTask; i++) newTaskList[i] = taskList[i];
+
+            for (int i = delTask + 1; i < taskList.length; i++) newTaskList[i - 1] = taskList[i];
+
+            taskList = newTaskList;
+            return true;
+
+        } else
             return false;
-        }
-        this.arr = supArray;
-        return true;
+
     }
 
     /**
@@ -80,9 +67,16 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      *
      * @return the int, size of ArrayList
      */
-    @Override
     public int size() {
-        return this.size;
+
+        int size = 0;
+        for (Task task : taskList) {
+            if (task != null) {
+                size++;
+            }
+        }
+        return size;
+
     }
 
     /**
@@ -91,40 +85,12 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      * @param index the index of the task
      * @return the task
      */
-    @Override
     public Task getTask(int index) {
+        if (index > size() || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
 
-        String s = "";
-        if (index < 0) {
-            s = s + "The index can not be negative. ";
-        }
-        if (index > size()) {
-            s = s + "Index out of bounds. ";
-        }
-        if (!s.equals("")) {
-            throw new IllegalArgumentException(s);
-        }
-        return arr[index];
-    }
-
-    /**
-     * Sets task on ArrayList.
-     *
-     * @param task  the task
-     * @param index the index of the task in the ArrayList
-     */
-    public void setTask(Task task, int index) {
-        String s = "";
-        if (index < 0) {
-            s = s + "The index can not be negative. ";
-        }
-        if (index > size()) {
-            s = s + "Index out of bounds. ";
-        }
-        if (!s.equals("")) {
-            throw new IllegalArgumentException(s);
-        }
-        arr[index] = task;
+        return taskList[index];
     }
 
 
@@ -136,29 +102,135 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      * @param to   the to
      * @return the array task list
      */
-    @Override
-    public ArrayTaskList incoming(int from, int to) {
+    public ArrayTaskListImpl incoming(int from, int to) {
+        ArrayTaskListImpl newTaskList = new ArrayTaskListImpl();
 
-        //int count = 0;
+        for (int i = 0; i < newTaskList.size(); i++) {
+            Task task = taskList[i];
+            int time = 0;
 
-        ArrayTaskList list;
-        list = new ArrayTaskListImpl();
-
-        if (from < 0 || to < 0) {
-            throw new IllegalArgumentException("the time labels cannot be negative");
-        }
-
-        else {
-            for (int i = 0; i < size(); i++) {
-                if (getTask(i).nextTimeAfter(from) != -1 && to >= getTask(i).nextTimeAfter(from)) {
-                    list.add(getTask(i));
-                }
+            if (task.isActive()) {
+                time = task.getStartTime();
             }
+
+            if (time > from && time < to) {
+                newTaskList.add(task);
+            }
+
         }
-        return list;
+
+        return newTaskList;
+
+    }
+
+    /**
+     * Equals boolean.
+     *
+     * @param o the o
+     * @return the boolean
+     */
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArrayTaskListImpl)) return false;
+        ArrayTaskListImpl tasks1 = (ArrayTaskListImpl) o;
+        return Arrays.equals(taskList, tasks1.taskList);
     }
 
 
+    /**
+     * Hash code int.
+     *
+     * @return the int
+     */
+    public int hashCode() {
+        return Arrays.hashCode(taskList);
+    }
+
+
+    /**
+     * Iterator iterator.
+     *
+     * @return the iterator
+     */
+    public Iterator<Task> iterator() {
+        Iterator<Task> iterator1 = new Iterator<Task>() {
+            private int current = 0;
+            private int last = -1;
+
+            @Override
+            public boolean hasNext() {
+
+                return current < size();
+            }
+
+            @Override
+            public Task next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("No next element");
+                } else {
+                    last = current;
+                    current++;
+                    return getTask(last);
+                }
+            }
+
+            @Override
+            public void remove() throws IllegalStateException {
+                ArrayTaskListImpl arrayRemove = new ArrayTaskListImpl();
+                if (current == 0) {
+                    throw new IllegalStateException();
+                } else {
+                    arrayRemove.taskList = taskList;
+                    Task tasksVoid = getTask(--current);
+                    arrayRemove.remove(tasksVoid);
+                    taskList = Arrays.copyOf(taskList, taskList.length - 1);
+                }
+            }
+        };
+        return iterator1;
+    }
+
+    /**
+     * Clone array task list.
+     *
+     * @return the array task list
+     */
+    public ArrayTaskListImpl clone() {
+        try {
+            ArrayTaskListImpl arrayTaskList = (ArrayTaskListImpl) super.clone();
+            arrayTaskList.taskList = Arrays.copyOf(taskList, taskList.length);
+            return arrayTaskList;
+        } catch (CloneNotSupportedException ex) {
+            System.err.println("CloneNotSupportedException");
+            return null;
+        }
+    }
+
+    /**
+     * Gets stream.
+     *
+     * @return the stream
+     */
+    @Override
+    public Stream<Task> getStream() {
+        LinkedList<Task> list = new LinkedList<>();
+        for (Task task : this) {
+            list.add(task);
+        }
+        if (list.isEmpty()) {
+            throw new IndexOutOfBoundsException();
+        }
+        return list.stream();
+    }
+
+    /**
+     * To string string.
+     *
+     * @return the string
+     */
+    public String toString() {
+        return "ArrayTaskList{" + "tasks=" + Arrays.toString(taskList) + '}';
+    }
 
 
 }
