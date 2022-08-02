@@ -2,27 +2,28 @@ package mx.tc.j2se.tasks;
 
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * The type Linked task list.
+ * Class-name: LinkedTaskListImpl
+ * This class is made for the purpose of implementing the LinkedTaskListImpl
+ * <p>
+ * Author: Alberto Sanchez
+ * Version info 1.0
+ * <p>
+ * Copyright Netracker
  */
-public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
-
+public class LinkedTaskListImpl extends AbstractTaskList implements Iterable<Task> {
     private Node head;
     private Node end;
     private int size;
 
-
     /**
-     * Add.
+     * this method add the specified task to LinkedTaskList.
      *
      * @param task the task
      */
-    @Override
     public void add(Task task) {
         if (isEmpty()) {
             head = new Node(task, null);
@@ -34,38 +35,30 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
         size++;
     }
 
-    /**
-     * Is empty boolean.
-     *
-     * @return the boolean
-     */
     public boolean isEmpty() {
         return this.size() == 0;
     }
 
     /**
-     * Remove boolean.
+     * this method remove a task from the LinkedTaskList and returns true, if such a task was in the list.
      *
      * @param task the task
-     * @return the boolean
      */
-    @Override
     public boolean remove(Task task) {
         Node current = head;
-        Node previous = null;
+        Node prev = null;
         for (int i = 0; i < size; i++) {
             if (getTask(i).equals(task)) {
-                if (previous != null) {
-                    previous.next = current.next;
-                    if (current.next == null)
-                        end = previous;
+                if (prev != null) {
+                    prev.next = current.next;
+                    if (current.next == null) end = prev;
                 } else {
                     head = head.next;
                 }
                 size--;
                 return true;
             }
-            previous = current;
+            prev = current;
             current = current.next;
         }
         return false;
@@ -73,7 +66,7 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
 
 
     /**
-     * Size int.
+     * Size method returns the number of tasks in te LinkedTaskList
      *
      * @return the int
      */
@@ -82,9 +75,9 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
     }
 
     /**
-     * Gets task.
+     * GetTask method returns a specified Task in the LinkedTaskList:
      *
-     * @param index the index
+     * @param index the index of the task
      * @return the task
      */
     public Task getTask(int index) {
@@ -102,33 +95,7 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
     }
 
     /**
-     * Incoming linked task list.
-     *
-     * @param from the from
-     * @param to   the to
-     * @return the linked task list
-     */
-    public LinkedTaskListImpl incoming(int from, int to) {
-        LinkedTaskListImpl newsTaskList = new LinkedTaskListImpl();
-        Node currentNode = head;
-
-        for (int i = 0; i < newsTaskList.size(); i++) {
-            Task task = currentNode.data;
-            int time = 0;
-
-            if (task.isActive()) {
-                time = task.getStartTime();
-            }
-
-            if (time > from && time < to) {
-                newsTaskList.add(task);
-            }
-        }
-        return newsTaskList;
-    }
-
-    /**
-     * Equals boolean.
+     * The Equals method is used to compare objects
      *
      * @param o the o
      * @return the boolean
@@ -136,16 +103,16 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
     @Override
     public boolean equals(Object o) {
         if (o instanceof LinkedTaskListImpl) {
-            LinkedTaskListImpl listOther = (LinkedTaskListImpl) o;
-            if (this.size() == listOther.size()) {
-                Iterator<Task> list1 = this.iterator();
-                Iterator<Task> list2 = listOther.iterator();
+            LinkedTaskListImpl LinkedList = (LinkedTaskListImpl) o;
+            if (this.size() == LinkedList.size()) {
+                Iterator list1 = this.iterator();
+                Iterator list2 = LinkedList.iterator();
 
                 while (list1.hasNext()) {
-                    Object e1 = list1.next();
-                    Object e2 = list2.next();
+                    Object o1 = list1.next();
+                    Object o2 = list2.next();
 
-                    if (!(Objects.equals(e1, e2))) {
+                    if (!(o1 == null ? o2 == null : o1.equals(o2))) {
                         return false;
                     }
                 }
@@ -156,7 +123,7 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
     }
 
     /**
-     * Hash code int.
+     * HashCode method is used to compare objects.
      *
      * @return the int
      */
@@ -170,9 +137,9 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
     }
 
     /**
-     * Clone linked task list.
+     * Clone method, creates an exact copy of an object.
      *
-     * @return the linked task list
+     * @return the array task list
      */
     public LinkedTaskListImpl clone() {
         try {
@@ -183,31 +150,13 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
             }
             return link;
         } catch (CloneNotSupportedException ex) {
-            System.out.println("CloneNotSupportedException");
+            System.err.println(ex.getMessage());
             return null;
         }
     }
 
-
     /**
-     * Get stream stream.
-     *
-     * @return the stream
-     */
-    @Override
-    public Stream<Task> getStream(){
-        LinkedList<Task> list = new LinkedList<>();
-        for (Task task : this) {
-            list.add(task);
-        }
-        if (list.isEmpty()){
-            throw new IndexOutOfBoundsException();
-        }
-        return list.stream();
-    }
-
-    /**
-     * iterator.
+     * Iterator method used to loop through collections, like ArrayList and LinkedList
      *
      * @return the iterator
      */
@@ -229,12 +178,12 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
                 if (current == null) {
                     throw new NoSuchElementException();
                 }
-                Task tas = current.getData();
+                Task task = current.getData();
                 prev2 = prev;
                 prev = current;
                 current = current.getNext();
                 removeCall = false;
-                return tas;
+                return task;
             }
 
             @Override
@@ -254,85 +203,55 @@ public class LinkedTaskListImpl implements LinkedTaskList, Iterable<Task> {
         return it;
     }
 
+    /**
+     * getStream method
+     * allows to work with collection as  the streams.
+     *
+     * @return the stream
+     */
+    @Override
+    public Stream<Task> getStream() {
+        LinkedTaskListImpl list = new LinkedTaskListImpl();
+        for (int i = 0; i < size(); i++) {
+            list.add(getTask(i));
+        }
+        return list.getStream();
+    }
 
     /**
-     * To string string.
+     * ToString method display should provide the maximum of information available
      *
      * @return the string
      */
     @Override
     public String toString() {
-        return "LinkedTaskList{" +
-                "head=" + head +
-                ", end=" + end +
-                ", size=" + size +
-                '}';
+        return "LinkedTaskList{" + "head=" + head + ", end=" + end + ", size=" + size + '}';
     }
 
-
-    /**
-     * The type Node.
-     */
     public static class Node {
-        /**
-         * The Data.
-         */
         public Task data;
-        /**
-         * The Next.
-         */
         public Node next;
 
-        /**
-         * Instantiates a new Node.
-         *
-         * @param data the data
-         * @param next the next
-         */
         public Node(Task data, Node next) {
             this.data = data;
             this.next = next;
         }
 
-        /**
-         * Gets data.
-         *
-         * @return the data
-         */
         public Task getData() {
             return this.data;
         }
 
-        /**
-         * Gets next.
-         *
-         * @return the next
-         */
         public Node getNext() {
             return this.next;
         }
 
-        /**
-         * Sets next.
-         *
-         * @param next the next
-         */
         public void setNext(Node next) {
             this.next = next;
         }
 
-        /**
-         * Tostring Node Class.
-         *
-         * @return the string
-         */
         @Override
         public String toString() {
-            return "Node{" +
-                    "data=" + data +
-                    ", next=" + next +
-                    '}';
+            return "Node{" + "data=" + data + ", next=" + next + '}';
         }
     }
 }
-
